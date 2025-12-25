@@ -3,6 +3,9 @@ import initDB, { pool } from "./config/db";
 import config from "./config";
 import looger from "./config/middleware";
 import { usrRoutes } from "./modules/user/usr.route";
+import { todoROutes } from "./modules/todo/todo.route";
+import { autRoutes } from "./modules/auth/auth.router";
+
 // import { Pool } from "pg"
 // import config from "./config"
 // import dotenv from "dotenv"
@@ -83,143 +86,26 @@ app.use('/users', usrRoutes);
 //      }
 // })
 
-
-
-app.get('/users/:id', async(req:Request, res:Response)=>{
-    // console.log(req.params.id)
-    // res.status(200).json({
-    //     message: "id"
-    // })
-
-    
-
-     try{
-         const result = await pool.query(`SELECT * FROM users WHERE id = $1`, [req.params.id])
-    //  console.log(result)
-
-        if(result.rows.length === 0){
-            res.status(404).json({
-                success: false,
-                message: "no rows found"
-            })
-            
-        }
-        else{
-                res.status(200).json({
-                    message: true,
-                    data: result.rows[0]
-                })
-            }
-     }
-
-     catch(err: any){
-        res.status(401).json({
-            success: false,
-           data:  err.message
-        })
-
-     }
+//
 
 
 
-
-})
-
+// app.get('/users/:id', )
 
 
-app.put('/users/:id',async(req:Request, res:Response)=>{
-      const {name, email} = req.body;
-    
-      
 
-      try{
-        const  result =  await pool.query(`UPDATE users SET  name=$1, email=$2  WHERE id=$3 RETURNING *`, [name, email, req.params.id]);
+// app.put('/users/:id',)
 
-
-        if(result.rows.length === 0){
-            res.status(401).json({
-                success: false,
-                  message: "user not found"
-            })
-        }
-        else{
-            res.status(200).json({
-                success: true,
-                message: "user updated",
-                data: result.rows[0]
-            })
-
-        }
-      }
-      catch(err:any){
-        res.status(401).json({
-            succes:false,
-            message: "data not found",
-            data: err.message,
-        })
-      }
-
-
-})
-
-app.delete('/users/:id', async(req: Request, res:Response)=>{
-     
-    
-
-
-     try{
-           const result = await pool.query(`DELETE FROM  USERS WHERE  id=$1`, [req.params.id]) 
-         
-
-        if(result.rowCount === 0){
-            res.status(401).json({
-                success: false,
-                  message: "not deleted"
-            })
-        }
-        else{
-            res.status(200).json({
-                success: true,
-                message: "user Successfully deleted",
-                data: result.rows
-            })
-
-        }
-      }
-      catch(err:any){
-        res.status(401).json({
-            succes:false,
-            message: "data not found",
-            data: err.message,
-        })
-      }
-
-})
+// app.delete('/users/:id', )
 
 // todos crud
+ 
+app.use('/todos', todoROutes)
 
-app.post('/todos', async(req:Request,  res: Response )=>{
-       const {user_id, title} = req.body;
+// app.post('/todos', )
 
-    try{
-        const result = await pool.query(`INSERT INTO todos(user_id, title) VALUES($1, $2) RETURNING *`, [user_id,  title]);
-        res.status(201).json({
-            success: true,
-            message: "todo  data created",
-            data: result.rows[0]
-        })
-    }
+app.use('/auth', autRoutes);
 
-    catch(err: any){
-        res.status(404).json({success: false,
-            message: "not found data of todo",
-        data: err.message})
-         
-    }
-
-     
-
-})
 
 app.use((req:Request, res: Response)=>{
     res.status(404).json({
