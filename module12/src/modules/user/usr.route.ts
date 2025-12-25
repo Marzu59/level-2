@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.post('/', controllers.createUser)
 
-router.get('/',looger, auth(), controllers.getuser)
+router.get('/',looger, auth("admin"), controllers.getuser)
 
 
 router.get('/:id', controllers.singleUser)

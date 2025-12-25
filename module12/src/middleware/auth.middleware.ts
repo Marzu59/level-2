@@ -3,10 +3,10 @@ import jwt, { JwtPayload } from "jsonwebtoken"
 
 import { NextFunction, Request, Response } from "express"
 import config from "../config";
+// ...roles rest oparetor ekta ekta kore vitore niye ashe array toiri kore
 
-
-const auth = ()=>{
-    return async(req:Request, res:Response, next:NextFunction)=>{
+const auth = (...roles: string[])=>{
+    return (req:Request, res:Response, next:NextFunction)=>{
 
         try{
 
@@ -16,10 +16,17 @@ const auth = ()=>{
         if(!token){
             return res.status(401).json({message:"you are not allowed" }) 
         }
-        const decoded = jwt.verify(token, config.jwt_secret as string)
+        const decoded = jwt.verify(token, config.jwt_secret as string) as JwtPayload;
       
         console.log(decoded)
-       req.user = decoded as JwtPayload;
+       req.user = decoded ;
+
+       if(roles.length && !roles.includes(decoded.role as string)){
+        return res.status(500).json({
+            error: "unauthorized"
+        })
+       }
+
 
 
         next()

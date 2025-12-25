@@ -1,14 +1,14 @@
 import { pool } from "../../config/db"
 import bcrypt from "bcryptjs";
-
+//payload means req.body
 const userQuery =async(payload:Record<string, unknown>)=>{
-const {name, email, password} = payload;
+const {name, role, email, password} = payload;
 
   const passwordHash = await bcrypt.hash(password as string, 10)
 
     const result = await pool.query(
-            `INSERT INTO    users(name, email, password) VALUES($1, $2, $3) RETURNING * `,
-            [name, email, passwordHash]
+            `INSERT INTO    users(name, role, email, password) VALUES($1, $2, $3, $4) RETURNING * `,
+            [name, role, email, passwordHash]
         )
         return result
 }

@@ -21,7 +21,7 @@ console.log({matchh})
     return false;
  }
   const sectet = config.jwt_secret;
- const token = jwt.sign({name: user.name, email: user.email}, sectet as string, {
+ const token = jwt.sign({name: user.name, email: user.email, role: user.role}, sectet as string, {
     expiresIn: "7d",
  });
  console.log(token)
