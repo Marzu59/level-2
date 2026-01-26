@@ -28,6 +28,32 @@ const  createPost = async(req:Request, res:Response)=>{
     // console.log(req.body)
 }
 
+
+const getAllposts = async(req:Request, res:Response)=>{
+
+      try{
+            const {search} = req.query;
+              const tags = req.query.tags;
+              const tagsAryORarray = tags ? (tags as string).split(",") : [];
+
+                     const searchString  = typeof search == 'string' ? search : undefined;
+               const result = await postDB.getAllpostsFromDB(searchString, tagsAryORarray);
+
+               res.status(200).json(result);
+
+
+      }
+      catch(err:any){
+               res.status(404).json({
+                message: err.message
+               })
+     }
+
+
+    
+}
+
 export const postcontroll = {
-    createPost
+    createPost,
+    getAllposts,
 };

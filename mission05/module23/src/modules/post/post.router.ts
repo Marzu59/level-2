@@ -64,6 +64,12 @@ const midddleware = (...roles:UserRole[])=>{
     }
 }
 
+
+router.get('/', postcontroll.getAllposts )
+
+
+
+
 router.post('/', midddleware(UserRole.USER), postcontroll.createPost);
 
 
