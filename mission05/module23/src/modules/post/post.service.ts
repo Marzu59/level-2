@@ -18,7 +18,7 @@ const createPostinDB = async (data:Omit< Post, 'id' |'createdAt'| 'updatedAt'| '
 }
 
 
-  const getAllpostsFromDB = async(payload:string | undefined, tags:string[] | [], isFeatured:boolean | undefined, status:PostStatus | undefined)=>{
+  const getAllpostsFromDB = async(payload:string | undefined, tags:string[] | [], isFeatured:boolean | undefined, status:PostStatus | undefined, page:number, limit:number)=>{
 
      const andConditons: PostWhereInput[] = [];
 
