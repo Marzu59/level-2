@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { postDB } from "./post.service";
 import { PostStatus } from "../../../generated/prisma/enums";
+import paginationSotingHelper from "../../helpers/paginationSortingHelpers";
 
 
 const  createPost = async(req:Request, res:Response)=>{
@@ -48,11 +49,18 @@ const getAllposts = async(req:Request, res:Response)=>{
                     status === 'PUBLISHED'? status : undefined
                    : undefined;
 
-                   const page = Number(req.query.page ?? 1);
-                   const limit = Number(req.query.limit ?? 10)
+                  //  const page = Number(req.query.page ?? 1);
+                  //  const limit = Number(req.query.limit ?? 10)
+                  //  const skip = (page - 1) * limit;
+
+                  //  const sortBy = req.query.sortBy as string  | undefined;
+                  //  const sortOrder= req.query.sortOrder as string | undefined;
+
+                 const   { page,  limit,  skip,  sortBy, sortOrder} = paginationSotingHelper(req.query)
+                    
 
                      const searchString  = typeof search == 'string' ? search : undefined;
-               const result = await postDB.getAllpostsFromDB(searchString, tagsAryORarray, handleIsFeatured, handleStatus, page, limit);
+               const result = await postDB.getAllpostsFromDB(searchString, tagsAryORarray, handleIsFeatured, handleStatus, page, limit,skip, sortBy, sortOrder);
 
                res.status(200).json(result);
 
@@ -68,7 +76,39 @@ const getAllposts = async(req:Request, res:Response)=>{
     
 }
 
+
+  const getPostByID = async(req:Request, res:Response)=>{
+
+   try{
+
+    const id= req.params.id as string ;
+        
+     if(!id){
+      throw new Error("Post id  required.")
+     }
+
+
+     const result = await postDB.getPostByIDintoDB(id)
+
+     res.status(200).json(result)
+
+   }
+
+   catch(error:any){
+    res.status(401).json({
+       message: error.message
+    })
+   }
+
+
+
+  }
+
+
+
+
 export const postcontroll = {
     createPost,
     getAllposts,
+    getPostByID,
 };

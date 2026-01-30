@@ -68,7 +68,7 @@ const midddleware = (...roles:UserRole[])=>{
 router.get('/', postcontroll.getAllposts )
 
 
-
+router.get('/:id', postcontroll.getPostByID);
 
 router.post('/', midddleware(UserRole.USER), postcontroll.createPost);
 

@@ -18,7 +18,9 @@ const createPostinDB = async (data:Omit< Post, 'id' |'createdAt'| 'updatedAt'| '
 }
 
 
-  const getAllpostsFromDB = async(payload:string | undefined, tags:string[] | [], isFeatured:boolean | undefined, status:PostStatus | undefined, page:number, limit:number)=>{
+  const getAllpostsFromDB = async(payload:string | undefined, tags:string[] | [], isFeatured:boolean | undefined, status:PostStatus | undefined, page:number, limit:number,skip:number,
+    sortBy:string , sortOrder:string 
+  )=>{
 
      const andConditons: PostWhereInput[] = [];
 
@@ -66,7 +68,8 @@ const createPostinDB = async (data:Omit< Post, 'id' |'createdAt'| 'updatedAt'| '
        }
         
       const result = await prisma.post.findMany({
-         
+           take: limit,
+           skip: skip,
     
    
 
@@ -75,15 +78,66 @@ const createPostinDB = async (data:Omit< Post, 'id' |'createdAt'| 'updatedAt'| '
             AND: andConditons
             
             
+        },
+        orderBy:  {
+            [sortBy] : sortOrder
         }
      });
-    return result;
+     const total =  await prisma.post.count({
+             where: {
+                AND: andConditons
+             }
+
+     });
+
+    return {
+        data: result,
+        pagination: {
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit)
+        }
+        
+    }
 
   }
 
+  
 
+  const getPostByIDintoDB = async(id:string)=>{
+
+   const result = await prisma.$transaction(async(tx)=>{
+
+
+        await tx.post.update({
+        where: {
+            id:id
+        },
+        data: {
+            views: {increment: 1}
+        }
+    })
+
+    const postData = await tx.post.findUnique({
+        where: {
+            id: id
+        }
+
+    }) 
+    return postData;
+
+
+   })
+
+   return result;
+       
+    
+
+  }
 
 export const postDB = {
     createPostinDB,
     getAllpostsFromDB,
+    getPostByIDintoDB
 }
