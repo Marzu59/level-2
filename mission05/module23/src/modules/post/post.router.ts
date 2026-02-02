@@ -22,8 +22,8 @@ declare global {
  }
 
 const router = express.Router()
-
-const midddleware = (...roles:UserRole[])=>{
+//for all this middleware
+ export const midddleware = (...roles:UserRole[])=>{
     return async (req:Request, res:Response, next:NextFunction)=>{
          const session = await auth.api.getSession({
             headers: req.headers as any
