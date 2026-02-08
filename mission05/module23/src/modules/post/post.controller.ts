@@ -1,10 +1,11 @@
-import { Request, Response } from "express";
+import e, { NextFunction, Request, Response } from "express";
 import { postDB } from "./post.service";
 import { PostStatus } from "../../../generated/prisma/enums";
 import paginationSotingHelper from "../../helpers/paginationSortingHelpers";
+import { UserRole } from "./post.router";
 
 
-const  createPost = async(req:Request, res:Response)=>{
+const  createPost = async(req:Request, res:Response, next:NextFunction)=>{
 
      try{
           if(!req.user?.id){
@@ -23,9 +24,10 @@ const  createPost = async(req:Request, res:Response)=>{
      }
 
      catch(eror:any){
-               res.status(404).json({
-                message: eror.message
-               })
+              //  res.status(404).json({
+              //   message: eror.message
+              //  })
+              next(eror)
      }
     // console.log(req.body)
 }
@@ -102,7 +104,124 @@ const getAllposts = async(req:Request, res:Response)=>{
 
 
 
+  };
+
+  const getmyPosts = async(req:Request, res:Response)=>{
+      
+         try{
+               const user = req.user;
+                if(!user){
+                  throw new Error("usr not found")
+                }
+                  
+            const result = await postDB.getmyPostsFromDB(req.user?.id as string);
+            res.status(200).json(result)
+
+         }
+         
+         catch(e:any){
+            res.status(401).json({
+              message: e.message
+            })
+           
+         }
+     
+
+  };
+
+  const updateOwnPost = async(req:Request, res:Response, next:NextFunction)=>{
+            
+      try{
+
+         const user = req.user;
+        //  console.log(user)
+          const {postId} = req.params;
+          if(!user){
+            throw new Error("user not fount")
+          }
+
+          const isAmdin = user.role === UserRole.ADMIN
+            
+           const result = await postDB.updateOwnPostIntoDB(postId as string, user.id, req.body, isAmdin);
+           res.status(200).json(result)
+
+
+
+      }
+
+      catch(e){
+         next(e)
+    // const errrorMessage = (e instanceof Error) ? e.message : "post update failed"
+    // res.status(400).json({
+    //     error: errrorMessage,
+    //     details: e
+    // })
+}
+
+  };
+
+
+
+  const deleteOwnpost = async(req:Request, res:Response)=>{
+
+
+    try{
+      const user = req.user;
+      const {postId} = req.params;
+      if(!user){
+        throw new Error("user not found")
+      };
+      const isAdmin = user?.role === UserRole.ADMIN
+       const result = await postDB.deleteOwnpostFromDB(postId as string,  user.id, isAdmin)
+        
+
+       
+       res.status(200).json({
+          message: "deleted successfully",
+          data: result
+       })
+         
+
+    }
+
+    catch(e){
+      const errrorMessage = (e instanceof Error) ? e.message : "comment delete failed"
+      res.status(400).json({
+        error: errrorMessage,
+        details: e
+      })
+    };
+  };
+
+
+  const getStats = async (req:Request, res:Response)=>{
+      
+       
+    try{
+      
+
+       const result = await postDB.getstatsFromDB()
+
+        res.status(200).json(result)
+
+
+    }
+
+    catch(e){
+      const errrorMessage = (e instanceof  Error) ? e.message : "stats get failed"
+
+       res.status(400).json({
+        error: errrorMessage,
+        details: e
+       })
+    }
+        
+    
+
   }
+
+
+
 
 
 
@@ -111,4 +230,8 @@ export const postcontroll = {
     createPost,
     getAllposts,
     getPostByID,
+    getmyPosts,
+    updateOwnPost,
+    deleteOwnpost,
+    getStats
 };

@@ -12,6 +12,8 @@ router.post('/', midddleware(UserRole.ADMIN, UserRole.USER), commnentControll.cr
 
 
 router.delete('/:commentId', midddleware(UserRole.ADMIN, UserRole.USER), commnentControll.deleteCommnet);
-router.patch('/:commentId', midddleware(UserRole.ADMIN, UserRole.USER), commnentControll.commentUpdate)
+router.patch('/:commentId', midddleware(UserRole.ADMIN, UserRole.USER), commnentControll.commentUpdate);
+
+router.patch('/:commentId/moderate', midddleware(UserRole.ADMIN), commnentControll.moderateComment)
 
  export const  commentRouter = router;
