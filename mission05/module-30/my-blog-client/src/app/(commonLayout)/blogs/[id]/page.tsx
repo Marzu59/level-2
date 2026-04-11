@@ -1,0 +1,82 @@
+import { Separator } from "@/components/ui/separator";
+import { blogService } from "@/services/blog.services";
+import { Blogpost } from "@/types";
+import { Badge } from "lucide-react";
+
+export const dynamicParams = false;
+export async function generateStaticParams() {
+
+const {data} = await blogService.getBlogposts();
+
+return data?.data?.map((blog:Blogpost )=> ({id: blog.id})).splice(0, 3);
+
+
+
+
+};
+
+
+
+export default async function  BlogPage ({params}: {params:Promise<{id: string}>}){
+  
+
+     const {id} = await params;
+     const {data:blog} = await blogService.getBlogById(id)
+   //   console.log(data)
+
+ return (
+     <article className="container mx-auto px-4 py-12 max-w-2xl">
+      {/* Header */}
+      <header className="mb-8">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-4">
+          {blog.title}
+        </h1>
+
+        <div className="flex items-center gap-3 text-muted-foreground text-sm">
+          
+          <span>·</span>
+          
+          <span>·</span>
+          <span>{blog.views} views</span>
+          <h1>{blog.id}</h1>
+        </div>
+      </header>
+
+      <Separator className="mb-8" />
+
+      {/* Content */}
+      <div className="prose prose-lg dark:prose-invert max-w-none leading-relaxed text-foreground">
+        <p className="whitespace-pre-wrap text-lg leading-8">{blog.content}</p>
+      </div>
+
+      <Separator className="my-8" />
+
+      {/* Footer */}
+      <footer className="space-y-6">
+        {blog.tags && blog.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {blog.tags.map((tag: string) => (
+              <Badge
+                key={tag}
+                
+                className="px-3 py-1 text-sm font-normal rounded-full"
+              >
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        )}
+
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
+          {/* <span>{blog._count?.comments ?? 0} comments</span> */}
+          {blog.isFeatured && (
+            <Badge >
+              Featured
+            </Badge>
+          )}
+        </div>
+      </footer>
+    </article>
+ )
+
+};

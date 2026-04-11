@@ -124,3 +124,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

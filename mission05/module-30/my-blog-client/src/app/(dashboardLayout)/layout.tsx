@@ -13,15 +13,20 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import React from "react"
 
-export default function dashBoardlayout({ admin, user}
-  : {
-     admin:React.ReactNode;
-     user:React.ReactNode;
-  },) {
+export default function dashBoardLayout({admin,user}
+    : {admin:React.ReactNode;
+        user:React.ReactNode;
+    }
+)
+{
+   
+     const userInfo = {role: "admin"}
+
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar  user={userInfo} />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
@@ -42,11 +47,15 @@ export default function dashBoardlayout({ admin, user}
           </Breadcrumb>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">
+          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+            <div className="aspect-video rounded-xl bg-muted/50" />
+            <div className="aspect-video rounded-xl bg-muted/50" />
+            <div className="aspect-video rounded-xl bg-muted/50" />
+          </div>
+          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
             
-            {admin}
-             {user}
-
-
+             {userInfo.role=== "admin" ? admin : user}
+          
         </div>
       </SidebarInset>
     </SidebarProvider>

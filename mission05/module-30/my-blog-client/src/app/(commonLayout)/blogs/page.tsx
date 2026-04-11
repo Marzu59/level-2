@@ -1,6 +1,6 @@
 
 
-const page = () => {
+export default function blog () {
     return (
         <div>
             
@@ -11,4 +11,3 @@ const page = () => {
     );
 };
 
-export default page;
