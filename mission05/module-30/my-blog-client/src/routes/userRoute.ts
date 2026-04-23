@@ -6,8 +6,8 @@ export  const userRoutes:Route[] = [
     title: "user management",
     items: [
         {
-            title: "user analytics",
-            url: "/user-analytics"
+            title: "create blog",
+            url: "/user-dashboard/create-blog"
         },
         {
             title: "user dashboard",

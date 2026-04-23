@@ -13,16 +13,22 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { Roles } from "@/constants/role"
+import { userService } from "@/services/user.service"
 import React from "react"
 
-export default function dashBoardLayout({admin,user}
+export default async function dashBoardLayout({admin,user}
     : {admin:React.ReactNode;
         user:React.ReactNode;
     }
 )
 {
    
-     const userInfo = {role: "admin"}
+     
+   const {data } = await userService.getSession()
+   console.log("userdata", data)
+
+   const userInfo = data.user;
 
   return (
     <SidebarProvider>
@@ -54,7 +60,7 @@ export default function dashBoardLayout({admin,user}
           </div>
           <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
             
-             {userInfo.role=== "admin" ? admin : user}
+             {userInfo.role=== Roles.admin ? admin : user}
           
         </div>
       </SidebarInset>

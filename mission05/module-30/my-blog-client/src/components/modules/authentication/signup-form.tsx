@@ -25,6 +25,15 @@ const formSchema = z.object({
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
  
+  const signInwithGoogle = async () => {
+  const data = await authClient.signIn.social({
+
+    provider: "google",
+    callbackURL: "http://localhost:3000/"
+  });
+  console.log(data)
+};
+
   const form = useForm({
     defaultValues: {
       name:"",
@@ -35,8 +44,9 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       onSubmit: formSchema,
     },
     onSubmit: async({value})=>{
-      const {data , error} = await authClient.signUp.email(value);
       const toastId = toast.loading("creating user")
+      const {data , error} = await authClient.signUp.email(value);
+      
 
       try{
 
@@ -51,7 +61,11 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
 
       }
       catch(err){
-            toast.error("something went wrong, please try again later", {id: toastId})
+               if(err instanceof Error){
+                toast.error(err.message)
+                return;
+               }
+            toast.error("something went wrong, please try again later")
       }
     }
   })
@@ -131,8 +145,11 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
         </form>
         
       </CardContent>
-      <CardFooter>
-        <Button form="signup" type="submit">submit</Button>
+      <CardFooter className="flex flex-col gap-5 justify-end">
+        <Button form="signup" type="submit">signup</Button>
+        <Button onClick={()=>signInwithGoogle()} variant="outline" type="button">
+                  Login with Google
+                </Button>
       </CardFooter>
     </Card>
   )

@@ -18,6 +18,7 @@ import Link from "next/link"
 import { adminRoutes } from "@/routes/adminRoutes"
 import { userRoutes } from "@/routes/userRoute"
 import { Route } from "@/types"
+import { Roles } from "@/constants/role"
 
 
 // This is sample data.
@@ -157,11 +158,11 @@ export function AppSidebar({user, ...props }:{user: {role:string}} & React.Compo
   let routes:Route[] = [];
 
   switch (user.role){
-    case "admin":
+    case Roles.admin:
       routes = adminRoutes;
       break;
 
-      case "user":
+      case Roles.user:
         routes = userRoutes;
         break;
 
@@ -178,6 +179,8 @@ export function AppSidebar({user, ...props }:{user: {role:string}} & React.Compo
         
         <SearchForm />
       </SidebarHeader>
+
+      
       <SidebarContent>
         {/* We create a SidebarGroup for each parent. */}
         {routes.map((item) => (
@@ -197,6 +200,7 @@ export function AppSidebar({user, ...props }:{user: {role:string}} & React.Compo
           </SidebarGroup>
         ))}
       </SidebarContent>
+
       <SidebarRail />
     </Sidebar>
   )

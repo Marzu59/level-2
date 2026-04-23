@@ -1,28 +1,35 @@
-"use client";
-import { cn } from "@/lib/utils"
+
+
+
+
+
+"use client"
 import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field"
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
+
 import { Input } from "@/components/ui/input"
 import { authClient } from "@/lib/auth-client"
+import {  useForm } from "@tanstack/react-form"
+import { toast } from "sonner"
+import   * as z from  "zod";
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
 
-   
+const formSchema = z.object({
+  
+  email: z.email(),
+  password: z.string().min(8, "minimum length 8")
+});
+
+export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
+ 
   const signInwithGoogle = async () => {
   const data = await authClient.signIn.social({
 
@@ -30,57 +37,111 @@ export function LoginForm({
     callbackURL: "http://localhost:3000/"
   });
   console.log(data)
+
+  //  toast.success("user logined successfully ")
 };
 
-const session = authClient.useSession();
-console.log(session)
+  const form = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+    validators:{
+      onSubmit: formSchema,
+    },
+    onSubmit: async({value})=>{
+      console.log(value)
+      const toastId = toast.loading("loging user")
+      const {data , error} = await authClient.signIn.email(value);
+      
+
+      try{
+
+         if(error){
+          console.log(error)
+          toast.error(error.message, {id: toastId});
+          return;
+         }
+
+         toast.success("user logined successfully ", {id: toastId})
+
+
+      }
+      catch(err){
+               if(err instanceof Error){
+                toast.error(err.message)
+                return;
+               }
+            toast.error("something went wrong, please try again later")
+      }
+    }
+  })
+
+
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
-        <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form>
-            <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                />
-              </Field>
-              <Field>
-                <div className="flex items-center">
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <a
-                    href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
-                </div>
-                <Input id="password" type="password" required />
-              </Field>
-              <Field>
-                <Button type="submit">Login</Button>
-                <Button onClick={()=>signInwithGoogle()} variant="outline" type="button">
+    <Card {...props}>
+      <CardHeader>
+        <CardTitle>Create an account</CardTitle>
+        <CardDescription>
+          Enter your information below to create your account
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form id="signin-form" onSubmit={(e)=>{
+          e.preventDefault();
+          form.handleSubmit();
+        }}>
+         <FieldGroup>
+
+          
+          
+          <form.Field name="email" children={(field)=>{ 
+            const isInvalid =
+          field.state.meta.isTouched && !field.state.meta.isValid;
+            return (
+                   <div>
+                    <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                    <input
+                    type="email"
+                    id={field.name}
+                    name={field.name} 
+                    value={field.state.value}
+                    onChange={(e)=> field.handleChange(e.target.value)}
+                    />
+           {isInvalid && <FieldError errors={field.state.meta.errors} />}
+          </div>
+            )
+            }}/>
+
+          <form.Field name="password" children={(field)=>{ 
+            const isInvalid =
+          field.state.meta.isTouched && !field.state.meta.isValid;
+            return (
+                   <div>
+                    <FieldLabel htmlFor={field.name}>password</FieldLabel>
+                    <input
+                    type="password"
+                    id={field.name}
+                    name={field.name} 
+                    value={field.state.value}
+                    onChange={(e)=> field.handleChange(e.target.value)}
+                    />
+              {isInvalid && <FieldError errors={field.state.meta.errors} />}
+          </div>
+            )
+            }}/>
+
+          </FieldGroup>
+        </form>
+        
+      </CardContent>
+      <CardFooter className="flex flex-col gap-5 justify-end">
+        <Button form="signin-form" type="submit">sigin</Button>
+        <Button onClick={()=>signInwithGoogle()} variant="outline" type="button">
                   Login with Google
                 </Button>
-                <FieldDescription className="text-center">
-                  Don&apos;t have an account? <a href="#">Sign up</a>
-                </FieldDescription>
-              </Field>
-            </FieldGroup>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+      </CardFooter>
+    </Card>
   )
 }
