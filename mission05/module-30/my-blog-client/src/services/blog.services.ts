@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 interface GetBlogParams {
      isFeatured?: boolean;
      search?:string;
+     page?: string;
 }
 
 interface serviceOptions {
