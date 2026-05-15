@@ -9,7 +9,9 @@ export default async function CreateBlogPage (){
      const {data} = await blogService.getBlogposts({}, {cache: "no-store"});
      
      
-
+if(!data || !data.data){
+    return <div>failed to load  blogs</div>
+}
  
     return(
       

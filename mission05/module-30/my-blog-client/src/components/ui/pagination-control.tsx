@@ -24,7 +24,7 @@ interface PaginationControlProps {
 export default function PaginationControls( {meta}: PaginationControlProps) {
   
 
-    const {limit, page, total,totalPages} = meta;
+    const {limit:pageSize, page:currentPage, total,totalPages} = meta;
 //   console.log(limit)
     const searchParams = useSearchParams();
     // console.log(searchParams.get("page"))
@@ -43,13 +43,14 @@ export default function PaginationControls( {meta}: PaginationControlProps) {
 
   //* Showing 1 to 10 of 21 -> page 1
   //* Showing 11 to 20 of 21 -> page 2
-  
+   const start =   (currentPage -1) * pageSize +1;
+    const end =   Math.min(currentPage * pageSize, total)
  
 
   return (
     <div className="flex items-center justify-between px-2 py-4 border-t mt-4">
       <div className="text-sm text-muted-foreground">
-        Showing
+        Showing {start} to {end} of {total} results
       </div>
 
       <div className="flex items-center space-x-2">
@@ -57,7 +58,8 @@ export default function PaginationControls( {meta}: PaginationControlProps) {
           <ChevronsLeft className="h-4 w-4" />
         </Button>
 
-        <Button
+        <Button onClick={()=>nevigateToPage(currentPage -1)}
+         disabled={currentPage == 1}
           variant="outline"
           size="icon">
           <ChevronLeft className="h-4 w-4" />
@@ -69,12 +71,13 @@ export default function PaginationControls( {meta}: PaginationControlProps) {
           </span>
         </div>
 
-        <Button onClick={()=> nevigateToPage(page + 1)}
+        <Button onClick={()=> nevigateToPage(currentPage + 1)}
+        disabled={currentPage == totalPages}
           variant="outline"
           size="icon">
           <ChevronRight className="h-4 w-4" />
         </Button>
-         0 of 0 page
+          {currentPage} of  {totalPages} pages
         <Button
           variant="outline"
           size="icon">

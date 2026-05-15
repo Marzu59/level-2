@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Roles } from "@/constants/role"
 import { userService } from "@/services/user.service"
+import { redirect } from "next/navigation"
 import React from "react"
 
 export default async function dashBoardLayout({admin,user}
@@ -25,10 +26,20 @@ export default async function dashBoardLayout({admin,user}
 {
    
      
-   const {data } = await userService.getSession()
-   console.log("userdata", data)
+   const {data , error} = await userService.getSession()
+   console.log("userdata", data, {"error": error})
 
+    // if(!data || !data.user){
+    //   return <div>loading</div>
+    // };
+
+
+    if(!data || !data.user){
+  return redirect('/login')  
+};
    const userInfo = data.user;
+
+    
 
   return (
     <SidebarProvider>
@@ -63,6 +74,7 @@ export default async function dashBoardLayout({admin,user}
              {userInfo.role=== Roles.admin ? admin : user}
           
         </div>
+        
       </SidebarInset>
     </SidebarProvider>
   )

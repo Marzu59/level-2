@@ -1,6 +1,6 @@
 
 
-export default function adminDefault (){
+export default function AdminDefault (){
 
     return null;
 }

@@ -4,6 +4,8 @@ import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { ThemeProvider } from "./providers/themeProvider";
 import { Toaster } from "sonner";
+import flower from   "../../public/flower.jpg"
+import Image from "next/image";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,6 +46,12 @@ export default function RootLayout({
           </ThemeProvider>
           {/* {children} */}
         <h1>This is root text </h1>
+        {/* <img src="https://images.pexels.com/photos/10047055/pexels-photo-10047055.jpeg" alt="" /> */}
+        <div className="relative w-full  h-[200px] md:h-[400px] lg:h-[500px]">
+          {/* <Image   src={flower} fill alt="Hero" className="object-cover rounded-md" /> */}
+          <Image src="https://images.pexels.com/photos/10047055/pexels-photo-10047055.jpeg" fill alt="Hero"  className=" rounded-md "/>
+        </div>
+        
           
         
         
